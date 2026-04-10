@@ -1,16 +1,48 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function AddTodoScreen({ navigation }) {
+export default function AddTodoScreen({ route, navigation }) {
+  const { addTodo } = route.params;
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const handleSave = () => {
+    // Validation
+    if (!title.trim() || !description.trim()) {
+      Alert.alert("Error", "Todo Tittle or Description can't be empty");
+      return;
+    }
+
+    // Add todo
+    addTodo({
+      id: Date.now().toString(),
+      title,
+      description,
+      completed: false,
+    });
+
+    // Success message
+    Alert.alert("Success", "Todo Added Successfully");
+
+    // set tittle and description
+    setTitle("");
+    setDescription("");
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Add New Todo</Text>
 
-      {/* Title Input */}
+      {/* Title */}
       <Text style={styles.label}>Title</Text>
       <TextInput
         style={styles.input}
@@ -19,34 +51,33 @@ export default function AddTodoScreen({ navigation }) {
         onChangeText={setTitle}
       />
 
-      {/* Description Input */}
+      {/* Description */}
       <Text style={styles.label}>Description</Text>
       <TextInput
-        style={[styles.input, styles.textArea]}
+        style={styles.textArea}
         placeholder="Enter description"
         value={description}
         onChangeText={setDescription}
         multiline
+        numberOfLines={4}
       />
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        
-        {/* Cancel */}
+        {/* Back */}
         <TouchableOpacity
-          style={styles.cancelButton}
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="close-circle-outline" size={20} color="white" />
-          <Text style={styles.buttonText}> Cancel</Text>
+          <Ionicons name="arrow-back-circle" size={20} color="white" />
+          <Text style={styles.buttonText}> Back</Text>
         </TouchableOpacity>
 
         {/* Save */}
-        <TouchableOpacity style={styles.saveButton}>
-          <Ionicons name="save-outline" size={20} color="white" />
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Ionicons name="save" size={20} color="white" />
           <Text style={styles.buttonText}> Save</Text>
         </TouchableOpacity>
-
       </View>
     </View>
   );
@@ -55,31 +86,30 @@ export default function AddTodoScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#8fd9fb",
+    padding: 20,
   },
-
   heading: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
     marginBottom: 20,
+    fontWeight: "bold",
   },
-
   label: {
     fontSize: 16,
     marginBottom: 5,
+    marginTop: 10,
   },
-
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
-    backgroundColor: "white",
+    padding: 12,
+    backgroundColor: "#eee",
+    borderRadius: 5,
   },
-
   textArea: {
+    borderWidth: 1,
+    padding: 12,
+    backgroundColor: "#eee",
+    borderRadius: 5,
     height: 100,
     textAlignVertical: "top",
   },
@@ -87,13 +117,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 30,
   },
 
-  cancelButton: {
+  backButton: {
     backgroundColor: "#e74c3c",
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 5,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -101,7 +131,7 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: "#2ecc71",
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 5,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -109,6 +139,5 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
-    marginLeft: 5,
   },
 });
